@@ -64,3 +64,21 @@ scheduler:
   max_instances: 2
   misfire_grace_time: 300
   timezone: "Asia/Shanghai"
+
+llm:
+  enabled: true
+  # 可选值："codex-responses"（ChatGPT Codex Responses 接口，必须使用流式响应）或
+  # "openai-compatible"（标准 /chat/completions 兼容接口）。
+  provider: "codex-responses"
+  base_url: "https://chatgpt.com/backend-api/codex/responses"
+  codex_token: ""
+  codex_account_id: ""
+  stream: true
+  api_key: ""
+  model: "gpt-5.6-terra"
+  timeout: 60
+  temperature: 0.3
+  max_tokens: 1200
+  summary_expire: 0
+  summary_platforms: []
+  summary_platform_news_limit: 10

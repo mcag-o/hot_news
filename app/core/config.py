@@ -58,6 +58,23 @@ class SchedulerConfig(BaseModel):
     misfire_grace_time: int
     timezone: str
 
+class LLMConfig(BaseModel):
+    enabled: bool = False
+    provider: str = "openai-compatible"
+    base_url: str = ""
+    api_key: str = ""
+    # `codex-responses` provider 专用凭据。
+    codex_token: str = ""
+    codex_account_id: str = ""
+    stream: bool = False
+    model: str = ""
+    timeout: int = 60
+    temperature: float = 0.3
+    max_tokens: int = 1200
+    summary_expire: int = 0
+    summary_platforms: List[str] = Field(default_factory=list)
+    summary_platform_news_limit: int = 10
+
 class NotificationConfig(BaseModel):
     dingtalk: Dict[str, Any] = Field(default_factory=dict)
     # 可以添加其他通知方式的配置
@@ -71,6 +88,7 @@ class Config(BaseModel):
     crawler: CrawlerConfig
     logging: LoggingConfig
     scheduler: SchedulerConfig
+    llm: Optional[LLMConfig] = None
     notification: Optional[NotificationConfig] = None
 
 # 全局配置对象
@@ -81,7 +99,7 @@ def load_config() -> Config:
     global _config
     if _config is None:
         try:
-            with open(CONFIG_PATH, 'r') as f:
+            with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
                 config_data = yaml.safe_load(f)
                 _config = Config(**config_data)
         except Exception as e:
@@ -112,6 +130,12 @@ def get_logging_config() -> LoggingConfig:
 
 def get_scheduler_config() -> SchedulerConfig:
     return get_config().scheduler
+
+def get_llm_config() -> LLMConfig:
+    config = get_config()
+    if config.llm:
+        return config.llm
+    return LLMConfig()
 
 def get_notification_config() -> Dict[str, Any]:
     """获取通知配置"""
